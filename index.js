@@ -17,7 +17,8 @@ var config = require("./config.json");
 var t = new Trello(config.trello_key, config.trello_token);
 
 config.callbacks = {
-	newclient: onNewClient
+	newclient: onNewClient,
+	subscription: onSubscription
 };
 
 prism.init(config, function(err) {
@@ -30,8 +31,22 @@ function onNewClient(tokens) {
 
 function onSubscription(err, payload) {
 	console.log(payload);
+	if (payload.data.userActions[0].payload == "complete") {
+		t.put("/1/cards/" + payload.item.sourceItemId.split("_")[1] + "/labels",
+			{ value: "green" },
+			function(err,data) {
+				getShoppingList();
+			});
+	}
+	if (payload.data.userActions[0].payload == "incomplete") {
+		t.put("/1/cards/" + payload.item.sourceItemId.split("_")[1] + "/labels",
+			{ value: "" },
+			function(err,data) {
+				getShoppingList();
+			});
+	}
 
-	getShoppingList();
+	//getShoppingList();
 	/* 
 			if (config.commands[i].aliases[j] == data.text) {
 				exec(config.commands[i].command, function(err, stdout, stderr) {

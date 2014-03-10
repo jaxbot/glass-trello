@@ -9,12 +9,14 @@
 // uses glass-prism Node.js library to interface with Glass
 var prism = require("glass-prism");
 
+// include the node-trello api library
 var Trello = require("node-trello");
 
 // load configuration for this instance
 var config = require("./config.json");
 
-var t = new Trello(config.trello_key, config.trello_token);
+// init with key and token from Trello
+var trello = new Trello(config.trello_key, config.trello_token);
 
 config.callbacks = {
 	newclient: onNewClient,
@@ -31,45 +33,27 @@ function onNewClient(tokens) {
 
 function onSubscription(err, payload) {
 	console.log(payload);
-	if (payload.data.userActions[0].payload == "complete") {
-		t.put("/1/cards/" + payload.item.sourceItemId.split("_")[1] + "/labels",
-			{ value: "green" },
-			function(err,data) {
-				getShoppingList();
-			});
+	if (payload.data.operation == "DELETE") {
+		var cardid = payload.item.sourceItemId.split("trello_")[1];
+		trello.del("/1/cards/" + cardid, function(err,data) {
+			console.log("Info: card deleted on Trello");
+		});
 	}
-	if (payload.data.userActions[0].payload == "incomplete") {
-		t.put("/1/cards/" + payload.item.sourceItemId.split("_")[1] + "/labels",
-			{ value: "" },
-			function(err,data) {
-				getShoppingList();
-			});
+	if (payload.data.operation == "INSERT") {
+		trello.post("/1/lists/" + config.lists["shopping"] + "/cards", { name: payload.item.text }, function(err,data) {
+			console.log(err);
+			console.log(data);
+		});
 	}
-
-	//getShoppingList();
-	/* 
-			if (config.commands[i].aliases[j] == data.text) {
-				exec(config.commands[i].command, function(err, stdout, stderr) {
-					console.log(stdout);
-
-					var html = prism.cards.stdout({ stdout: stdout, command: config.commands[i].command });
-
-					if (config.commands[i].sendback)
-					prism.insertCard({ token: payload.token, card: html });
-				});
-			}
-		}
-	}
-	*/
 };
 
 function getShoppingList() {
-	t.get("/1/lists/" + config.lists["shopping"] + "/cards", function(err,data) {
+	trello.get("/1/lists/" + config.lists["shopping"] + "/cards", function(err,data) {
 		var html = prism.cards.main(data);
-		prism.updateAllCards({ card: html, pinned: true, id: "trello_cover", bundleId: "trelloshop", isBundleCover: true });
+		prism.updateAllCards({ html: html, pinned: true, sourceItemId: "trello_cover", bundleId: "trelloshop", isBundleCover: true });
 		for (var i = 0; i < data.length; i++) {
 			var html = prism.cards.listitem(data[i]);
-			prism.updateAllCards({ card: html, pinned: true, id: "trello_" + data[i].id, bundleId: "trelloshop", isBundleCover: false });
+			prism.updateAllCards({ html: html, pinned: true, sourceItemId: "trello_" + data[i].id, bundleId: "trelloshop", isBundleCover: false });
 		}
 	});
 };

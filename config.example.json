@@ -1,0 +1,15 @@
+{
+	// obtain these from the Google API Console
+	"client_id": "",
+	"client_secret": "",
+	"redirect_dir": "https://example.com/gtop/oauth2callback",
+
+	// the port the http server should listen on
+	"port": 8101,
+
+	// trello keys
+	"trello_key": "",
+	"trello_token": "",
+	"lists": { "shopping": "l2d7baaa1a7a10a05a2abab9" },
+	"board_id": "lb6lbbYb"
+}

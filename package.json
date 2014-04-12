@@ -1,29 +1,28 @@
 {
-  "name": "gtop",
+  "name": "glass-trello",
   "version": "0.0.1",
-  "description": "Server monitoring application for Google Glass",
+  "description": "Example Trello syncing with Google Glass",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/jaxbot/gtop.git"
+    "url": "git://github.com/jaxbot/glass-trello.git"
   },
   "keywords": [
     "glass",
     "google",
-    "gtop",
-    "server",
-    "monitoring"
+    "trello"
   ],
   "author": "Jonathan Warner (jaxbot)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jaxbot/gtop/issues"
+    "url": "https://github.com/jaxbot/glass-trello/issues"
   },
-  "homepage": "https://github.com/jaxbot/gtop",
+  "homepage": "https://github.com/jaxbot/glass-trello",
   "dependencies": {
-    "glass-prism": "0.0.1"
+    "node-trello": "^0.1.4",
+    "glass-prism": "^0.3.0"
   }
 }
